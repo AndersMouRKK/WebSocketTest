@@ -30,7 +30,7 @@ public class Client : MonoBehaviour {
 		{
 			connect = false;
 			connected = false;
-			Debug.Log("Socket did close");
+			Debug.Log("Socket did close" + e.Reason);
 		};
         webSocket.OnMessage += (sender, e) =>
         {
