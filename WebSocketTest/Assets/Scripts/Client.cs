@@ -22,11 +22,13 @@ public class Client : MonoBehaviour {
         webSocket = new WebSocket("ws://" + serverIp + ":" + serverPort + "/ping");
         webSocket.OnOpen += (sender, e) =>
         {
+			connect = true;
 			connected = true;
             Debug.Log("Socket did open");
         };
 		webSocket.OnClose += (object sender, CloseEventArgs e) => 
 		{
+			connect = false;
 			connected = false;
 			Debug.Log("Socket did close");
 		};
@@ -45,14 +47,18 @@ public class Client : MonoBehaviour {
         if(connected != connect)
         {
 			if (connect) {
+				connect = false;
 				Debug.Log ("Trying to connect to server..");
 				if (connectAsync)
 					webSocket.ConnectAsync ();
 				else
 					webSocket.Connect ();
 				Debug.Log ("Finished Connect() / ConnectAsync() call");
-			} else
-                webSocket.Close();
+			} else {
+				connect = true;
+				Debug.Log ("Trying to close connection");
+				webSocket.CloseAsync ();
+			}
         }
         if(connected && ping)
         {
