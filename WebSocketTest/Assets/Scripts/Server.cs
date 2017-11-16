@@ -6,15 +6,29 @@ using WebSocketSharp.Server;
 
 public class Server : MonoBehaviour {
 
-    public string serverIp = "127.0.0.1";
-    public string serverPort = "10000";
+    public string serverIp = "192.168.3.213";
+    public string serverPort = "4000";
 
     internal class Ping : WebSocketBehavior
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            Debug.Log("Client says: " + e.Data);
-            Send("pong");
+            if (e.IsText)
+            {
+                Debug.Log("Client says: " + e.Data);
+                Send("pong");
+            }
+            else if (e.IsBinary)
+            {
+                Debug.Log("Client sent a binary message of length: " + e.RawData.Length);
+                byte[] data = new byte[50];
+                for(int i = 0; i < data.Length; i++)
+                {
+                    data[i] = (byte)i;
+                }
+                Send(data);
+            }
+            
         }
         protected override void OnClose(CloseEventArgs e)
         {

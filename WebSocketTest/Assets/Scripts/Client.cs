@@ -6,10 +6,11 @@ using WebSocketSharp;
 public class Client : MonoBehaviour {
 
 	public string serverIp = "192.168.3.213";
-    public string serverPort = "14042";
+    public string serverPort = "4000";
 
     public bool connect = false;
     public bool ping = false;
+    public bool send100Bytes = false;
 	public bool connectAsync = true;
 
     bool connected = false;
@@ -34,7 +35,14 @@ public class Client : MonoBehaviour {
 		};
         webSocket.OnMessage += (sender, e) =>
         {
-            Debug.Log("Server says: " + e.Data);
+            if(e.IsText)
+            {
+                Debug.Log("Server says: " + e.Data);
+            }
+            else if(e.IsBinary)
+            {
+                Debug.Log("Server send binary data of length: " + e.RawData.Length);
+            }
         };
         webSocket.OnError += (sender, e) =>
         {
@@ -60,10 +68,23 @@ public class Client : MonoBehaviour {
 				webSocket.CloseAsync ();
 			}
         }
-        if(connected && ping)
+        if(connected)
         {
-            ping = false;
-            webSocket.Send("hello");
+            if (ping)
+            {
+                ping = false;
+                webSocket.Send("hello");
+            }
+            else if (send100Bytes)
+            {
+                send100Bytes = false;
+                byte[] data = new byte[100];
+                for(int i = 0; i < data.Length; i++)
+                {
+                    data[i] = (byte)i;
+                }
+                webSocket.Send(data);
+            }
         }
     }
 
