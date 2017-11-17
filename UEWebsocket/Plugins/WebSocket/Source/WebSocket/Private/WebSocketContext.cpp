@@ -67,7 +67,8 @@ int UWebSocketContext::callback_echo(struct lws *wsi, enum lws_callback_reasons 
 {
 	void* pUser = lws_wsi_user(wsi);
 	UWebSocketBase* pWebSocketBase = (UWebSocketBase*)pUser;
-
+	if(reason != LWS_CALLBACK_CLIENT_WRITEABLE && reason != LWS_CALLBACK_GET_THREAD_ID && reason != LWS_CALLBACK_CHANGE_MODE_POLL_FD && reason != LWS_CALLBACK_LOCK_POLL && reason != LWS_CALLBACK_UNLOCK_POLL)
+		UE_LOG(WebSocket, Display, TEXT("callback_echo: %d"), (int)reason);
 	switch (reason)
 	{
 	case LWS_CALLBACK_CLOSED:
@@ -138,13 +139,13 @@ void UWebSocketContext::CreateCtx()
 	info.gid = -1;
 	info.uid = -1;
 	info.extensions = exts;
-	info.options = LWS_SERVER_OPTION_VALIDATE_UTF8;
-	info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+	info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;/*LWS_SERVER_OPTION_VALIDATE_UTF8;
+	info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;*/
 
 	mlwsContext = lws_create_context(&info);
 	if (mlwsContext == nullptr)
 	{
-		//UE_LOG(WebSocket, Error, TEXT("libwebsocket Init fail"));
+		UE_LOG(WebSocket, Error, TEXT("libwebsocket Init fail"));
 	}
 }
 
