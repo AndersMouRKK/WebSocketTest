@@ -284,8 +284,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8075fd8a23b53d84ead7f8e1fa3ae614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverIp: 127.0.0.1
-  serverPort: 14042
+  serverPort: 4000
+  sendRandomString: 0
+  sendRandomBytePacket: 0
 --- !u!4 &1067480871
 Transform:
   m_ObjectHideFlags: 0
@@ -327,9 +328,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverIp: 192.168.3.213
-  serverPort: 14042
+  serverPort: 4000
   connect: 0
   ping: 0
+  send100Bytes: 0
   connectAsync: 1
 --- !u!4 &1674713613
 Transform:

@@ -6,8 +6,10 @@ using WebSocketSharp.Server;
 
 public class Server : MonoBehaviour {
 
-    public string serverIp = "192.168.3.213";
-    public string serverPort = "4000";
+    public int serverPort = 4000;
+
+    public bool sendRandomString = false;
+    public bool sendRandomBytePacket = false;
 
     internal class Ping : WebSocketBehavior
     {
@@ -16,7 +18,7 @@ public class Server : MonoBehaviour {
             if (e.IsText)
             {
                 Debug.Log("Client says: " + e.Data);
-                Send("pong");
+                Send("pong - " + e.Data);
             }
             else if (e.IsBinary)
             {
@@ -47,15 +49,37 @@ public class Server : MonoBehaviour {
     WebSocketServer server;
 
 	void Start () {
-        server = new WebSocketServer("ws://" + serverIp + ":" + serverPort);
-        //server = new WebSocketServer(14042, true);
-        //string certPath = Application.dataPath + "/TestCert2.pfx";
-        //server.SslConfiguration.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath);
+        server = new WebSocketServer(serverPort);
         server.AddWebSocketService<Ping>("/ping");
         server.Start();
         Debug.Log("Server asked to start");
 	}
-    
+
+    private void Update()
+    {
+        if(server != null)
+        {
+            if(sendRandomString)
+            {
+                sendRandomString = false;
+                int n = Random.Range(0, 3);
+                string str = n == 0 ? "Hi There!" : n == 1 ? "Oh hello" : "Okay now";
+                server.WebSocketServices["/ping"].Sessions.Broadcast(str);
+            }
+            else if(sendRandomBytePacket)
+            {
+                sendRandomBytePacket = false;
+                int n = Random.Range(40, 150);
+                byte[] buffer = new byte[n];
+                for(int i = 0; i < n; i++)
+                {
+                    buffer[i] = (byte)i;
+                }
+                server.WebSocketServices["/ping"].Sessions.Broadcast(buffer);
+            }
+        }
+    }
+
     void OnApplicationQuit()
     {
         server.Stop();
