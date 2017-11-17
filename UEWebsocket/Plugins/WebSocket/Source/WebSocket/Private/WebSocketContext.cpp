@@ -44,11 +44,12 @@ static struct lws_protocols protocols[] = {
 };
 
 static const struct lws_extension exts[] = {
-	{
+	// Disabled first extension since it caused all but the first server message to be empty
+	/*{
 		"permessage-deflate",
 		lws_extension_callback_pm_deflate,
 		"permessage-deflate; client_no_context_takeover"
-	},
+	},*/ 
 	{
 		"deflate-frame",
 		lws_extension_callback_pm_deflate,

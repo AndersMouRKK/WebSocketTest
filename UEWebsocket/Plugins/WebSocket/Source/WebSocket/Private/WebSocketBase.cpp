@@ -164,7 +164,7 @@ void UWebSocketBase::SendBinary(int length)
 	{
 		TArray<unsigned char> buffer;
 		for (int i = 0; i < length; i++) {
-			buffer.Add(min(i, 255));
+			buffer.Add(i < 255 ? i : 0);
 		}
 		mSendQueueBinary.Add(buffer);
 	}
@@ -199,8 +199,9 @@ void UWebSocketBase::ProcessWriteable()
 
 void UWebSocketBase::ProcessRead(const char* in, int len)
 {
-	FString strData = UTF8_TO_TCHAR(in);
 	UE_LOG(WebSocket, Display, TEXT("Received data length: %d"), len);
+	FString strData = UTF8_TO_TCHAR(in);
+	strData.Append(FString::Printf(TEXT(" (length: %d)"), len));
 	OnReceiveData.Broadcast(strData);
 }
 
